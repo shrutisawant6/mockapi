@@ -1,0 +1,13 @@
+2025-05-15 18:21:07.240 +05:30 [INF] Now listening on: https://localhost:7222
+2025-05-15 18:21:07.297 +05:30 [INF] Now listening on: http://localhost:5206
+2025-05-15 18:21:07.481 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2025-05-15 18:21:07.687 +05:30 [INF] Hosting environment: Development
+2025-05-15 18:21:07.690 +05:30 [INF] Content root path: E:\CodeTrial\APIEnhacements\Code\MockAPI
+2025-05-15 18:21:08.527 +05:30 [INF] Request starting HTTP/2 GET https://localhost:7222/swagger/index.html - null null
+2025-05-15 18:21:08.937 +05:30 [INF] Request finished HTTP/2 GET https://localhost:7222/swagger/index.html - 200 null text/html;charset=utf-8 432.0207ms
+2025-05-15 18:21:09.031 +05:30 [INF] Request starting HTTP/2 GET https://localhost:7222/_vs/browserLink - null null
+2025-05-15 18:21:09.031 +05:30 [INF] Request starting HTTP/2 GET https://localhost:7222/_framework/aspnetcore-browser-refresh.js - null null
+2025-05-15 18:21:09.156 +05:30 [INF] Request finished HTTP/2 GET https://localhost:7222/_framework/aspnetcore-browser-refresh.js - 200 13750 application/javascript; charset=utf-8 125.2152ms
+2025-05-15 18:21:09.192 +05:30 [INF] Request finished HTTP/2 GET https://localhost:7222/_vs/browserLink - 200 null text/javascript; charset=UTF-8 161.0192ms
+2025-05-15 18:21:09.246 +05:30 [INF] Request starting HTTP/2 GET https://localhost:7222/swagger/v1/swagger.json - null null
+2025-05-15 18:21:09.500 +05:30 [INF] Request finished HTTP/2 GET https://localhost:7222/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 253.9003ms
