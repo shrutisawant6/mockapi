@@ -15,8 +15,8 @@ namespace MockAPI.SharedServices
 
     public class HttpService : IHttpService
     {
-        private static readonly string MainUrl = "https://api.restful-api.dev/objects";
-        private static readonly string GetAllObjects = "https://api.restful-api.dev/objects";
+        //private static readonly string MainUrl = "https://api.restful-api.dev/objects";
+        //private static readonly string GetAllObjects = "https://api.restful-api.dev/objects";
 
         private readonly HttpClient _httpClient;
 
@@ -30,28 +30,32 @@ namespace MockAPI.SharedServices
         {
             try
             {
-
                 HttpResponseMessage response = await _httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
                 return await response.Content.ReadAsStringAsync();
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
+                throw;
             }
-            return string.Empty;
         }
 
         public async Task<string> PostDataAsync(string url, object data)
         {
+            try
+            {
+                string json = JsonConvert.SerializeObject(data); ;
+                HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            string json = JsonConvert.SerializeObject(data); ;
-            HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
-
-            HttpResponseMessage response = await _httpClient.PostAsync(url, content);
-            response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsStringAsync();
-
+                HttpResponseMessage response = await _httpClient.PostAsync(url, content);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadAsStringAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public async Task<string> DeleteDataAsync(string url, string id)
@@ -62,22 +66,20 @@ namespace MockAPI.SharedServices
 
                 HttpResponseMessage response = await _httpClient.DeleteAsync(finalurl);
 
-                if(response.StatusCode != System.Net.HttpStatusCode.OK)
+                if (response.StatusCode != System.Net.HttpStatusCode.OK)
                     throw new CustomHttpResponseException((int)response.StatusCode, response.ReasonPhrase);
 
                 response.EnsureSuccessStatusCode();
                 return await response.Content.ReadAsStringAsync();
             }
-            catch(CustomHttpResponseException custEx)
+            catch (CustomHttpResponseException)
             {
                 throw;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
-
         }
-
     }
 }

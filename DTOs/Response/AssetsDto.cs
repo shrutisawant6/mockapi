@@ -2,6 +2,6 @@
 {
     public class AssetsDto
     {
-        public List<AssetDto> Items { get; set; }
+        public List<AssetDto> Items { get; set; } = [];
     }
 }

@@ -33,7 +33,7 @@ namespace MockAPI.Controllers
         [ApiExplorerSettings(GroupName = "v1")]
         [HttpPost]
         [Route(nameof(GetSpecificAssets))]
-        public async Task<IActionResult> GetSpecificAssets(FilterObjectsRequest request)
+        public async Task<IActionResult> GetSpecificAssets(GetSpecificObjectRequest request)
         {
             return Ok(await _assetsService.GetSpecificAssets(request));
         }

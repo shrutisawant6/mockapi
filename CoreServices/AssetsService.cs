@@ -13,11 +13,11 @@ namespace MockAPI.CoreServices
     {
         Task<AssetsDto> GetAssets(FilterObjectsRequest request);
 
-        Task<AssetsDto> GetSpecificAssets(FilterObjectsRequest request);
+        Task<AssetsDto> GetSpecificAssets(GetSpecificObjectRequest request);
 
-        Task<AddedAssetResponse> AddAsset(ManageAssetRequest request);
+        Task<AddedAssetResponse?> AddAsset(ManageAssetRequest request);
 
-        Task<DeleteAssetResponse> DeleteAsset(DeleteAssetRequest request);
+        Task<DeleteAssetResponse?> DeleteAsset(DeleteAssetRequest request);
     }
 
     public class AssetsService : IAssetsService
@@ -33,7 +33,7 @@ namespace MockAPI.CoreServices
             _httpService = httpService;
             _configuration = configuration;
 
-            RestfulAPIUrl = _configuration["RestfulAPI:Url"];
+            RestfulAPIUrl = _configuration["RestfulAPI:Url"] ?? string.Empty;
         }
 
         #region GET
@@ -43,28 +43,31 @@ namespace MockAPI.CoreServices
             try
             {
                 //retrieve data from restful api
+                if (string.IsNullOrEmpty(RestfulAPIUrl))
+                    return new AssetsDto();
+
                 var result = await _httpService.GetDataAsync(RestfulAPIUrl);
                 var assetData = JsonConvert.DeserializeObject<List<Asset>>(result);
 
                 //first serach based on name
                 if (!string.IsNullOrEmpty(request.Search))
-                    assetData = assetData
+                    assetData = assetData?
                                         .Where(a => a.Name.Contains(request.Search, StringComparison.OrdinalIgnoreCase))
                                         .ToList();
 
 
                 //followed by pagination, for accurate results
-                var pagedAssets = assetData
+                var pagedAssets = assetData?
                                             .Skip((request.PageNumber - 1) * request.PageSize)
                                             .Take(request.PageSize)
                                             .ToList();
 
                 //convert to dto
-                var assetDto = pagedAssets.ToAssetDto();
+                var assetDto = pagedAssets?.ToAssetDto();
 
                 return new AssetsDto
                 {
-                    Items = assetDto
+                    Items = assetDto ?? []
                 };
             }
             catch (Exception ex)
@@ -74,29 +77,27 @@ namespace MockAPI.CoreServices
             }
         }
 
-        public async Task<AssetsDto> GetSpecificAssets(FilterObjectsRequest request)
+        public async Task<AssetsDto> GetSpecificAssets(GetSpecificObjectRequest request)
         {
             try
             {
-                var fullUrl = $"{RestfulAPIUrl}?" +
-                                  string.Join("&", Enumerable.Range(request.PageNumber, request.PageSize)
-                                                             .Select(id => $"id={id}"));
+                var fullUrl = $"{RestfulAPIUrl}?" + string.Join("&", $"id={request.Id}");
 
                 var result = await _httpService.GetDataAsync(fullUrl);
-                List<Asset> assetData = JsonConvert.DeserializeObject<List<Asset>>(result);
+                List<Asset>? assetData = JsonConvert.DeserializeObject<List<Asset>>(result);
 
-                //first serach based on name
+                //first search based on name as well
                 if (!string.IsNullOrEmpty(request.Search))
-                    assetData = assetData
+                    assetData = assetData?
                                         .Where(a => a.Name.Contains(request.Search, StringComparison.OrdinalIgnoreCase))
                                         .ToList();
 
                 //convert to dto
-                var assetDto = assetData.ToAssetDto();
+                var assetDto = assetData?.ToAssetDto();
 
                 return new AssetsDto
                 {
-                    Items = assetDto
+                    Items = assetDto ?? []
                 };
             }
             catch (Exception ex)
@@ -110,13 +111,16 @@ namespace MockAPI.CoreServices
 
         #region ADD
 
-        public async Task<AddedAssetResponse> AddAsset(ManageAssetRequest request)
+        public async Task<AddedAssetResponse?> AddAsset(ManageAssetRequest request)
         {
             try
             {
+                if (string.IsNullOrEmpty(RestfulAPIUrl))
+                    return new AddedAssetResponse();
+
                 var result = await _httpService.PostDataAsync(RestfulAPIUrl, request.ToManageAssetDto());
                 var response = JsonConvert.DeserializeObject<AddedAssetDto>(result);
-                return response.ToAddedAssetResponse();
+                return response?.ToAddedAssetResponse();
             }
             catch (Exception ex)
             {
@@ -133,13 +137,17 @@ namespace MockAPI.CoreServices
         {
             try
             {
+                if (string.IsNullOrEmpty(RestfulAPIUrl))
+                    return new DeleteAssetResponse();
+
                 var result = await _httpService.DeleteDataAsync(RestfulAPIUrl, request.Id);
                 var response = JsonConvert.DeserializeObject<DeleteAssetDto>(result);
-                return response.ToDeleteAssetResponse();
+                return response?.ToDeleteAssetResponse();
             }
             catch (CustomHttpResponseException custEx)
             {
-                return null;
+                Log.Error(custEx, $"{nameof(DeleteAsset)} has failed.");
+                throw;
             }
             catch (Exception ex)
             {

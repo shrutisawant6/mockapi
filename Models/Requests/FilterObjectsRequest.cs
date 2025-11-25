@@ -4,12 +4,8 @@ using System.ComponentModel.DataAnnotations;
 namespace MockAPI.Models.Requests
 {
     [CompareProperties("PageSize", "PageNumber")]
-    public class FilterObjectsRequest
+    public class FilterObjectsRequest: BaseFilterObjectsRequest
     {
-        [DefaultValue("")]
-        [MaxLength(100, ErrorMessage = "Name cannot exceed 100 characters.")]
-        public string? Search { get; set; }
-
         [DefaultValue("1")]
         [Required]
         [Range(1, int.MaxValue, ErrorMessage = "PageNumber must be at least 1.")]
